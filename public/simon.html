@@ -2,9 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says - Movét</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<!-- Wrapper to center and style the webcam canvas -->
+<div class="video-wrapper">
+    <!-- Canvas where the webcam feed and pose landmarks will be drawn -->
+    <canvas id="poseCanvas" width="640" height="480"></canvas>
+</div>
 
+<!-- Import the game logic via a JS module -->
+<script type="module" src="./js/simon.js"></script>
 </body>
 </html>
