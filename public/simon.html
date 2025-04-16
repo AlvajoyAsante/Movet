@@ -42,15 +42,17 @@
         <!-- Transparent outline image for neutral pose guide -->
         <img id="pose-overlay" src="assets/outline.png" alt="Neutral Pose Overlay" style="
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 640px;
-        height: 480px;
+        top: 50%;
+        left: 50%;
+        width: 550px; /* Slightly smaller than 640 */
+        height: 412px; /* Same aspect ratio */
+        transform: translate(-50%, -50%);
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.3s ease;
         z-index: 2;
-      " />
+    " />
+
     </div>
 </div>
 

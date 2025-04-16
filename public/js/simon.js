@@ -13,9 +13,27 @@ let previousPose = null;
 let userReady = false;
 let readyFrameCount = 0;
 
+let awaitingNeutral = false;
+let neutralTimerStarted = false;
+let neutralTimer = null;
+
 const overlayImg = document.getElementById('pose-overlay');
 const whiteOverlay = document.getElementById('white-overlay');
 
+// --- Helper: Check if user is in neutral pose ---
+function checkNeutralPosition(landmarks) {
+    const leftWrist = landmarks[15];
+    const rightWrist = landmarks[16];
+    const leftHip = landmarks[23];
+    const rightHip = landmarks[24];
+
+    if (!leftWrist || !rightWrist || !leftHip || !rightHip) return false;
+
+    const nearHip = (w, h) =>
+        Math.abs(w.y - h.y) < 0.1 && Math.abs(w.x - h.x) < 0.15;
+
+    return nearHip(leftWrist, leftHip) && nearHip(rightWrist, rightHip);
+}
 
 // 🔧 Angle calculation for joints
 function getAngleBetweenPoints(A, B, C) {
@@ -147,20 +165,12 @@ function checkPose(landmarks) {
         instructionText.innerText = `✅ You nailed the ${currentPose.name}!`;
         gameActive = false;
 
-        // ⏳ Delay before showing overlay
-        setTimeout(() => {
-            // Show white tint + overlay image
-            whiteOverlay.style.opacity = 1;
-            overlayImg.style.opacity = 1;
+        whiteOverlay.style.opacity = 1;
+        whiteOverlay.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+        overlayImg.style.opacity = 1;
 
-            instructionText.innerText = "🤔 Get ready for the next pose...";
-
-            setTimeout(() => {
-                whiteOverlay.style.opacity = 0;
-                overlayImg.style.opacity = 0;
-                startGameRound();
-            }, 1500); // Delay before next pose
-        }, 1500); // Delay after success message
+        awaitingNeutral = true;
+        neutralTimerStarted = false;
     }
 }
 
@@ -211,8 +221,39 @@ setupPoseLandmarker(canvas, ctx).then(({ startDetectionLoop }) => {
             return;
         }
 
+        if (awaitingNeutral) {
+            const inNeutral = checkNeutralPosition(landmarks);
+
+            whiteOverlay.style.backgroundColor = inNeutral
+                ? "rgba(0, 255, 0, 0.3)" // green
+                : "rgba(255, 0, 0, 0.3)"; // red
+
+            instructionText.innerText = inNeutral
+                ? "✅ Holding neutral position..."
+                : "🧍 Return to neutral position!";
+
+            if (inNeutral && !neutralTimerStarted) {
+                neutralTimerStarted = true;
+                neutralTimer = setTimeout(() => {
+                    awaitingNeutral = false;
+                    neutralTimerStarted = false;
+                    whiteOverlay.style.opacity = 0;
+                    overlayImg.style.opacity = 0;
+                    startGameRound();
+                }, 3000);
+            }
+
+            if (!inNeutral && neutralTimerStarted) {
+                clearTimeout(neutralTimer);
+                neutralTimerStarted = false;
+            }
+
+            return;
+        }
+
         if (gameActive) {
             checkPose(landmarks);
         }
     });
 });
+
