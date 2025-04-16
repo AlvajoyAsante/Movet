@@ -22,6 +22,9 @@ let score = 0;
 
 const overlayImg = document.getElementById('pose-overlay');
 const whiteOverlay = document.getElementById('white-overlay');
+const replayBtn = document.getElementById("replay-btn");
+const endButtons = document.getElementById("end-buttons");
+const homeBtn = document.getElementById("home-btn");
 
 let musicStarted = false;
 let simonSaid = false; // whether this round included "Simon Says"
@@ -202,6 +205,7 @@ function checkPose(landmarks) {
             backgroundMusic.pause();
             backgroundMusic.currentTime = 0;
             correctBell.play(); // celebratory ding!
+            endButtons.style.display = "flex";
             return;
         }
 
@@ -220,6 +224,7 @@ function checkPose(landmarks) {
         backgroundMusic.pause();
         backgroundMusic.currentTime = 0;
         gameOverSound.play();
+        endButtons.style.display = "flex";
     }
 }
 
@@ -260,6 +265,7 @@ function startGameRound() {
                         backgroundMusic.pause();
                         backgroundMusic.currentTime = 0;
                         gameOverSound.play();
+                        endButtons.style.display = "flex"; // ✅ Show replay/return buttons
                     }
                 }, 10000);
             });
@@ -299,6 +305,9 @@ window.startGameWithTarget = function (target) {
     gameEl.style.display = "flex";
     requestAnimationFrame(() => gameEl.classList.add("visible"));
     instructionText.innerText = "🙆 Step into frame to begin!";
+    endButtons.style.display = "flex";
+    replayBtn.style.display = "none";
+    homeBtn.style.display = "inline-flex";
 
     // 🔄 Only now start the landmarker + detection
     setupPoseLandmarker(canvas, ctx).then(({ startDetectionLoop }) => {
@@ -370,6 +379,35 @@ window.startGameWithTarget = function (target) {
         });
     });
 }
+
+// Button Logic
+replayBtn.addEventListener("click", () => {
+    // Reset all necessary state
+    score = 0;
+    poseMatched = false;
+    gameOver = false;
+    gameActive = false;
+    userReady = false;
+    awaitingNeutral = false;
+    neutralTimerStarted = false;
+    readyFrameCount = 0;
+    instructionText.innerText = "🙆 Step into frame to begin!";
+    scoreText.innerText = "Score: 0";
+    whiteOverlay.style.opacity = 0;
+    overlayImg.style.opacity = 0;
+    endButtons.style.display = "none";
+
+    if (!musicStarted) {
+        backgroundMusic.play().catch(() => {});
+        musicStarted = true;
+    }
+
+    // Let the original pose detection loop continue running — it'll detect framing and start again
+});
+
+homeBtn.addEventListener("click", () => {
+    window.location.href = "index.html";
+});
 
 
 
