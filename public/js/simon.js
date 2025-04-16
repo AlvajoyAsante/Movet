@@ -5,83 +5,152 @@ const ctx = canvas.getContext('2d');
 const instructionText = document.getElementById('instruction-text');
 
 let gameActive = false;
-let timer;
 let poseMatched = false;
+let timer;
+let currentPose = null;
+let previousPose = null;
 
-// --- Define your test pose ---
-const T_POSE = {
-    name: "T-Pose",
-    leftArmAngle: 180,
-    rightArmAngle: 180,
-    margin: 20
-};
+let userReady = false;
+let readyFrameCount = 0;
 
-// --- Calculate the angle at the elbow joint ---
+// 🔧 Angle calculation for joints
 function getAngleBetweenPoints(A, B, C) {
     const AB = { x: A.x - B.x, y: A.y - B.y };
     const CB = { x: C.x - B.x, y: C.y - B.y };
-
     const dot = AB.x * CB.x + AB.y * CB.y;
     const magAB = Math.sqrt(AB.x ** 2 + AB.y ** 2);
     const magCB = Math.sqrt(CB.x ** 2 + CB.y ** 2);
-
     const cosine = dot / (magAB * magCB);
-    const angle = Math.acos(Math.max(-1, Math.min(1, cosine))) * (180 / Math.PI);
-    return angle;
+    return Math.acos(Math.max(-1, Math.min(1, cosine))) * (180 / Math.PI);
 }
 
-// --- Pose matching logic ---
+// 📚 Pose library
+const poseLibrary = [
+    {
+        name: "T-Pose",
+        validate: (lm) => {
+            const leftAngle = getAngleBetweenPoints(lm[11], lm[13], lm[15]);
+            const rightAngle = getAngleBetweenPoints(lm[12], lm[14], lm[16]);
+            const leftY = [lm[11].y, lm[13].y, lm[15].y];
+            const rightY = [lm[12].y, lm[14].y, lm[16].y];
+            const leftAligned = Math.max(...leftY) - Math.min(...leftY) < 0.05;
+            const rightAligned = Math.max(...rightY) - Math.min(...rightY) < 0.05;
+            return (
+                Math.abs(leftAngle - 180) <= 20 &&
+                Math.abs(rightAngle - 180) <= 20 &&
+                leftAligned &&
+                rightAligned
+            );
+        }
+    },
+    {
+        name: "Raise Right Hand",
+        validate: (lm) => lm[16].y < lm[12].y
+    },
+    {
+        name: "Raise Left Hand",
+        validate: (lm) => lm[15].y < lm[11].y
+    },
+    {
+        name: "Hands in the Air",
+        validate: (lm) => lm[15].y < lm[11].y && lm[16].y < lm[12].y
+    },
+    {
+        name: "Hands on Hips",
+        validate: (lm) => {
+            if (!lm[23] || !lm[24]) return false;
+            const leftNearHip = Math.abs(lm[15].y - lm[23].y) < 0.07 && lm[15].y > lm[11].y;
+            const rightNearHip = Math.abs(lm[16].y - lm[24].y) < 0.07 && lm[16].y > lm[12].y;
+            return leftNearHip && rightNearHip;
+        }
+    }
+];
+
+// 🎯 Detect if user is fully in frame (shoulders and hips)
+function isUserProperlyFramed(landmarks) {
+    const leftShoulder = landmarks[11];
+    const rightShoulder = landmarks[12];
+    const leftHip = landmarks[23];
+    const rightHip = landmarks[24];
+
+    if (!leftShoulder || !rightShoulder || !leftHip || !rightHip) return false;
+
+    // Shoulders must be in the upper third
+    const shouldersHighEnough = leftShoulder.y < 0.4 && rightShoulder.y < 0.4;
+
+    // Hips must be in the lower half and below shoulders
+    const hipsLowEnough = leftHip.y > 0.6 && rightHip.y > 0.6;
+    const hipsBelowShoulders = leftHip.y > leftShoulder.y && rightHip.y > rightShoulder.y;
+
+    return shouldersHighEnough && hipsLowEnough && hipsBelowShoulders;
+}
+
+
+
+
+// ✅ Check current pose match
 function checkPose(landmarks) {
-    const leftAngle = getAngleBetweenPoints(landmarks[11], landmarks[13], landmarks[15]);
-    const rightAngle = getAngleBetweenPoints(landmarks[12], landmarks[14], landmarks[16]);
+    if (!currentPose) return;
 
-    // Extract y-values
-    const leftY = [landmarks[11].y, landmarks[13].y, landmarks[15].y];
-    const rightY = [landmarks[12].y, landmarks[14].y, landmarks[16].y];
+    const matched = currentPose.validate(landmarks);
 
-    // Horizontal check: max difference between y-coordinates
-    const leftAligned = Math.max(...leftY) - Math.min(...leftY) < 0.05;
-    const rightAligned = Math.max(...rightY) - Math.min(...rightY) < 0.05;
-
-    console.log(`Left Angle: ${leftAngle.toFixed(2)}, Right Angle: ${rightAngle.toFixed(2)}`);
-    console.log(`Left Aligned: ${leftAligned}, Right Aligned: ${rightAligned}`);
-
-    const inMargin = (actual, target, margin) =>
-        Math.abs(actual - target) <= margin;
-
-    const leftArmGood = inMargin(leftAngle, T_POSE.leftArmAngle, T_POSE.margin) && leftAligned;
-    const rightArmGood = inMargin(rightAngle, T_POSE.rightArmAngle, T_POSE.margin) && rightAligned;
-
-    if (leftArmGood && rightArmGood) {
+    if (matched && !poseMatched) {
         poseMatched = true;
         clearTimeout(timer);
-        instructionText.innerText = '✅ Great job!';
+        instructionText.innerText = `✅ You nailed the ${currentPose.name}!`;
         gameActive = false;
+        setTimeout(startGameRound, 1500);
     }
 }
 
+// 🎲 Pick a new random pose
+function getRandomPose() {
+    let next;
+    do {
+        next = poseLibrary[Math.floor(Math.random() * poseLibrary.length)];
+    } while (next === previousPose);
+    previousPose = next;
+    return next;
+}
 
-// --- Starts a new round of the game ---
+// 🚀 Start a new round
 function startGameRound() {
-    instructionText.innerText = `Hold a ${T_POSE.name}!`;
+    currentPose = getRandomPose();
     poseMatched = false;
     gameActive = true;
+    instructionText.innerText = `Do the "${currentPose.name}" pose!`;
+
+    console.log(`🕹️ New Pose: ${currentPose.name}`);
 
     timer = setTimeout(() => {
         if (!poseMatched) {
-            instructionText.innerText = '❌ Game Over! You missed the pose.';
+            instructionText.innerText = `❌ Game Over! Missed "${currentPose.name}".`;
             gameActive = false;
         }
-    }, 10000); // 10 seconds to respond
+    }, 10000);
 }
 
-// --- Setup pose detection ---
+// 🔄 Start the system
 setupPoseLandmarker(canvas, ctx).then(({ startDetectionLoop }) => {
     startDetectionLoop((landmarks) => {
+        if (!userReady) {
+            if (isUserProperlyFramed(landmarks)) {
+                readyFrameCount++;
+                instructionText.innerText = "🙆 Stay in frame...";
+                if (readyFrameCount >= 10) {
+                    userReady = true;
+                    instructionText.innerText = "✅ You're in frame! Get ready...";
+                    setTimeout(startGameRound, 1500);
+                }
+            } else {
+                readyFrameCount = 0;
+                instructionText.innerText = "👋 Please get your upper body in the frame!";
+            }
+            return;
+        }
+
         if (gameActive) {
             checkPose(landmarks);
         }
     });
-
-    startGameRound();
 });
