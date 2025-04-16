@@ -47,12 +47,12 @@ export async function setupPoseLandmarker(canvas, ctx) {
 
     // Return an object with the method to start the pose detection loop
     return {
-        startDetectionLoop: () => detectFrame(poseLandmarker)
+        startDetectionLoop: (onResults) => detectFrame(poseLandmarker, onResults)
     };
 }
 
 // Loop that runs on each video frame to detect poses and draw results
-function detectFrame(poseLandmarker) {
+function detectFrame(poseLandmarker, onResults) {
     video.requestVideoFrameCallback((now, metadata) => {
         const results = poseLandmarker.detectForVideo(video, metadata.mediaTime * 1000);
 
@@ -73,9 +73,14 @@ function detectFrame(poseLandmarker) {
 
             // Debug log for detected pose landmarks
             console.log('Detected landmarks:', results.landmarks);
+
+            // 🧠 Send the landmarks back to simon.js (if a callback is provided)
+            if (typeof onResults === 'function') {
+                onResults(results.landmarks[0]); // only return the most prominent pose
+            }
         }
 
         // Continue the loop
-        detectFrame(poseLandmarker);
+        detectFrame(poseLandmarker, onResults);
     });
-} 
+}
