@@ -13,6 +13,10 @@ let previousPose = null;
 let userReady = false;
 let readyFrameCount = 0;
 
+const overlayImg = document.getElementById('pose-overlay');
+const whiteOverlay = document.getElementById('white-overlay');
+
+
 // 🔧 Angle calculation for joints
 function getAngleBetweenPoints(A, B, C) {
     const AB = { x: A.x - B.x, y: A.y - B.y };
@@ -29,18 +33,18 @@ const poseLibrary = [
     {
         name: "T-Pose",
         validate: (lm) => {
-            const leftYDiff1 = Math.abs(lm[11].y - lm[13].y);
-            const leftYDiff2 = Math.abs(lm[13].y - lm[15].y);
-            const leftXDist = Math.abs(lm[11].x - lm[15].x);
-
-            const rightYDiff1 = Math.abs(lm[12].y - lm[14].y);
-            const rightYDiff2 = Math.abs(lm[14].y - lm[16].y);
-            const rightXDist = Math.abs(lm[12].x - lm[16].x);
-
-            const leftAligned = leftYDiff1 < 0.04 && leftYDiff2 < 0.04 && leftXDist > 0.22;
-            const rightAligned = rightYDiff1 < 0.04 && rightYDiff2 < 0.04 && rightXDist > 0.22;
-
-            return leftAligned && rightAligned;
+            const leftAngle = getAngleBetweenPoints(lm[11], lm[13], lm[15]);
+            const rightAngle = getAngleBetweenPoints(lm[12], lm[14], lm[16]);
+            const leftY = [lm[11].y, lm[13].y, lm[15].y];
+            const rightY = [lm[12].y, lm[14].y, lm[16].y];
+            const leftAligned = Math.max(...leftY) - Math.min(...leftY) < 0.05;
+            const rightAligned = Math.max(...rightY) - Math.min(...rightY) < 0.05;
+            return (
+                Math.abs(leftAngle - 180) <= 20 &&
+                Math.abs(rightAngle - 180) <= 20 &&
+                leftAligned &&
+                rightAligned
+            );
         }
     },
     {
@@ -52,7 +56,7 @@ const poseLibrary = [
         validate: (lm) => lm[15].y < lm[11].y
     },
     {
-        name: "Hands in the Air",
+        name: "Arms Up",
         validate: (lm) => lm[15].y < lm[11].y && lm[16].y < lm[12].y
     },
     {
@@ -63,11 +67,50 @@ const poseLibrary = [
             const rightNearHip = Math.abs(lm[16].y - lm[24].y) < 0.07 && lm[16].y > lm[12].y;
             return leftNearHip && rightNearHip;
         }
+    },
+    {
+        name: "Touch Your Shoulders",
+        validate: (lm) => {
+            const leftWristNearShoulder = Math.abs(lm[15].x - lm[11].x) < 0.1 && Math.abs(lm[15].y - lm[11].y) < 0.1;
+            const rightWristNearShoulder = Math.abs(lm[16].x - lm[12].x) < 0.1 && Math.abs(lm[16].y - lm[12].y) < 0.1;
+            return leftWristNearShoulder && rightWristNearShoulder;
+        }
+    },
+    {
+        name: "One Arm Up, One Down",
+        validate: (lm) => {
+            return (
+                (lm[16].y < lm[12].y && lm[15].y > lm[11].y) || // Right up, left down
+                (lm[15].y < lm[11].y && lm[16].y > lm[12].y)    // Left up, right down
+            );
+        }
+    },
+    {
+        name: "Hand on Head",
+        validate: (lm) => {
+            const headY = lm[0].y;
+            const leftWristNearHead = Math.abs(lm[15].y - headY) < 0.1;
+            const rightWristNearHead = Math.abs(lm[16].y - headY) < 0.1;
+            return leftWristNearHead || rightWristNearHead;
+        }
+    },
+    {
+        name: "Salute",
+        validate: (lm) => {
+            const eyeY = (lm[1].y + lm[4].y) / 2;
+            const rightWristNearEye = Math.abs(lm[16].y - eyeY) < 0.05 && lm[16].x < lm[4].x;
+            return rightWristNearEye;
+        }
+    },
+    {
+        name: "Hands Crossed in Front",
+        validate: (lm) => {
+            const handsClose = Math.abs(lm[15].x - lm[16].x) < 0.15;
+            const handsBelowChest = lm[15].y > lm[11].y && lm[16].y > lm[12].y;
+            return handsClose && handsBelowChest;
+        }
     }
 ];
-
-
-
 
 
 // 🎯 Detect if user is fully in frame (shoulders and hips)
@@ -103,8 +146,22 @@ function checkPose(landmarks) {
         clearTimeout(timer);
         instructionText.innerText = `✅ You nailed the ${currentPose.name}!`;
         gameActive = false;
-        setTimeout(startGameRound, 1500);
+
+        // Show white tint + overlay image
+        whiteOverlay.style.opacity = 1;
+        overlayImg.style.opacity = 1;
+
+        setTimeout(() => {
+            instructionText.innerText = "🤔 Get ready for the next pose...";
+            setTimeout(() => {
+                whiteOverlay.style.opacity = 0;
+                overlayImg.style.opacity = 0;
+                startGameRound();
+            }, 1500);
+        }, 1500);
     }
+
+
 }
 
 // 🎲 Pick a new random pose
