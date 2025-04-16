@@ -63,6 +63,36 @@ const poseLibrary = [
             const rightNearHip = Math.abs(lm[16].y - lm[24].y) < 0.07 && lm[16].y > lm[12].y;
             return leftNearHip && rightNearHip;
         }
+    },
+    {
+        name: "Touch Your Shoulders",
+        validate: (lm) => {
+            const leftTouch = Math.abs(lm[15].x - lm[11].x) < 0.05 && Math.abs(lm[15].y - lm[11].y) < 0.05;
+            const rightTouch = Math.abs(lm[16].x - lm[12].x) < 0.05 && Math.abs(lm[16].y - lm[12].y) < 0.05;
+            return leftTouch && rightTouch;
+        }
+    },
+    {
+        name: "Hand on Head",
+        validate: (lm) => {
+            const leftOnHead = lm[15].y < lm[0].y && Math.abs(lm[15].x - lm[0].x) < 0.1;
+            const rightOnHead = lm[16].y < lm[0].y && Math.abs(lm[16].x - lm[0].x) < 0.1;
+            return leftOnHead || rightOnHead;
+        }
+    },
+    {
+        name: "Salute",
+        validate: (lm) => {
+            const rightSalute = lm[16].y < lm[12].y && Math.abs(lm[16].x - lm[12].x) < 0.1;
+            return rightSalute;
+        }
+    },
+    {
+        name: "Hands Crossed in Front",
+        validate: (lm) => {
+            const handsCrossed = Math.abs(lm[15].x - lm[16].x) < 0.1 && lm[15].y > lm[11].y && lm[16].y > lm[12].y;
+            return handsCrossed;
+        }
     }
 ];
 
@@ -88,9 +118,6 @@ function isUserProperlyFramed(landmarks) {
 
     return shouldersHighEnough && hipsLowEnough && hipsBelowShoulders;
 }
-
-
-
 
 // ✅ Check current pose match
 function checkPose(landmarks) {
