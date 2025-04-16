@@ -147,22 +147,23 @@ function checkPose(landmarks) {
         instructionText.innerText = `✅ You nailed the ${currentPose.name}!`;
         gameActive = false;
 
-        // Show white tint + overlay image
-        whiteOverlay.style.opacity = 1;
-        overlayImg.style.opacity = 1;
-
+        // ⏳ Delay before showing overlay
         setTimeout(() => {
+            // Show white tint + overlay image
+            whiteOverlay.style.opacity = 1;
+            overlayImg.style.opacity = 1;
+
             instructionText.innerText = "🤔 Get ready for the next pose...";
+
             setTimeout(() => {
                 whiteOverlay.style.opacity = 0;
                 overlayImg.style.opacity = 0;
                 startGameRound();
-            }, 1500);
-        }, 1500);
+            }, 1500); // Delay before next pose
+        }, 1500); // Delay after success message
     }
-
-
 }
+
 
 // 🎲 Pick a new random pose
 function getRandomPose() {
