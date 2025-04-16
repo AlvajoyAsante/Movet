@@ -29,18 +29,18 @@ const poseLibrary = [
     {
         name: "T-Pose",
         validate: (lm) => {
-            const leftAngle = getAngleBetweenPoints(lm[11], lm[13], lm[15]);
-            const rightAngle = getAngleBetweenPoints(lm[12], lm[14], lm[16]);
-            const leftY = [lm[11].y, lm[13].y, lm[15].y];
-            const rightY = [lm[12].y, lm[14].y, lm[16].y];
-            const leftAligned = Math.max(...leftY) - Math.min(...leftY) < 0.05;
-            const rightAligned = Math.max(...rightY) - Math.min(...rightY) < 0.05;
-            return (
-                Math.abs(leftAngle - 180) <= 20 &&
-                Math.abs(rightAngle - 180) <= 20 &&
-                leftAligned &&
-                rightAligned
-            );
+            const leftYDiff1 = Math.abs(lm[11].y - lm[13].y);
+            const leftYDiff2 = Math.abs(lm[13].y - lm[15].y);
+            const leftXDist = Math.abs(lm[11].x - lm[15].x);
+
+            const rightYDiff1 = Math.abs(lm[12].y - lm[14].y);
+            const rightYDiff2 = Math.abs(lm[14].y - lm[16].y);
+            const rightXDist = Math.abs(lm[12].x - lm[16].x);
+
+            const leftAligned = leftYDiff1 < 0.04 && leftYDiff2 < 0.04 && leftXDist > 0.22;
+            const rightAligned = rightYDiff1 < 0.04 && rightYDiff2 < 0.04 && rightXDist > 0.22;
+
+            return leftAligned && rightAligned;
         }
     },
     {
@@ -65,6 +65,10 @@ const poseLibrary = [
         }
     }
 ];
+
+
+
+
 
 // 🎯 Detect if user is fully in frame (shoulders and hips)
 function isUserProperlyFramed(landmarks) {
