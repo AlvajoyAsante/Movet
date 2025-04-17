@@ -7,8 +7,16 @@
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="video-wrapper" style="flex-direction: column;">
+<div id="game-setup" style="text-align: center; margin-bottom: 20px;">
+    <h2>Choose Your Target Score</h2>
+    <button class="game-button" onclick="startGameWithTarget(5)">Play to 5</button>
+    <button class="game-button" onclick="startGameWithTarget(10)">Play to 10</button>
+    <button class="game-button" onclick="startGameWithTarget(15)">Play to 15</button>
+</div>
+
+<div id="game-container" class="video-wrapper" style="flex-direction: column; display: none;">
     <h2 id="instruction-text" style="margin-bottom: 20px; text-align: center;">Get ready...</h2>
+    <h3 id="score-text" style="text-align: center; margin-top: 10px;">Score: 0</h3>
 
     <!-- Container for video, overlays, and canvas -->
     <div style="
@@ -53,6 +61,10 @@
         z-index: 2;
     " />
 
+    </div>
+    <div id="end-buttons" style="display: none; flex-direction: row; justify-content: center; gap: 15px; margin-top: 20px;">
+        <button id="replay-btn" class="game-button">🔁 Replay</button>
+        <button id="home-btn" class="game-button">🏠 Return to Home</button>
     </div>
 </div>
 
