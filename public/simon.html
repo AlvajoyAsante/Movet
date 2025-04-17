@@ -18,55 +18,28 @@
     <h2 id="instruction-text" style="margin-bottom: 20px; text-align: center;">Get ready...</h2>
     <h3 id="score-text" style="text-align: center; margin-top: 10px;">Score: 0</h3>
 
-    <!-- Container for video, overlays, and canvas -->
-    <div style="
-  position: relative;
-  width: 640px;
-  height: 480px;
-  border: 8px solid black;
-  border-radius: 2rem;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    ">
+    <!-- 📸 Pose image + 🎥 Webcam -->
+    <div class="game-content">
+        <div id="pose-image-container">
+            <img id="pose-image" src="assets/poses/default.png" alt="Pose Instruction" />
+        </div>
 
-    <!-- Canvas for video & pose drawing -->
-        <canvas id="poseCanvas" width="640" height="480"></canvas>
+        <div class="webcam-container">
+            <canvas id="poseCanvas" width="640" height="480"></canvas>
 
-        <!-- Subtle white overlay to enhance visibility of outline -->
-        <div id="white-overlay" style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 640px;
-        height: 480px;
-        background-color: rgba(255, 255, 255, 0.5);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        pointer-events: none;
-        z-index: 1;
-        border-radius: 2rem;
-      "></div>
+            <div id="white-overlay"></div>
 
-        <!-- Transparent outline image for neutral pose guide -->
-        <img id="pose-overlay" src="assets/outline.png" alt="Neutral Pose Overlay" style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 550px; /* Slightly smaller than 640 */
-        height: 412px; /* Same aspect ratio */
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-        z-index: 2;
-    " />
-
+            <img id="pose-overlay" src="assets/outline.png" alt="Neutral Pose Overlay" />
+        </div>
     </div>
+
+    <!-- Replay & Return buttons -->
     <div id="end-buttons" style="display: none; flex-direction: row; justify-content: center; gap: 15px; margin-top: 20px;">
         <button id="replay-btn" class="game-button">🔁 Replay</button>
         <button id="home-btn" class="game-button">🏠 Return to Home</button>
     </div>
 </div>
+
 
 <script type="module" src="./js/simon.js"></script>
 </body>

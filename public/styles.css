@@ -269,3 +269,100 @@ canvas {
     font-size: 0.85rem;
     font-weight: 300;
 }
+
+/* Container for pose image and webcam side by side */
+.game-content {
+    display: flex;
+    justify-content: center;   /* center horizontally */
+    align-items: center;       /* center vertically */
+    gap: 8px;                  /* small horizontal gap between image and webcam */
+}
+
+/* Pose image container on the left */
+#pose-image-container {
+    height: 480px;
+    display: flex;
+    align-items: center;
+    margin: 0;                 /* remove margin-right from inline */
+}
+
+/* The pose image itself */
+#pose-image {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    margin: 0 auto;            /* center inside container */
+}
+
+/* Webcam container on the right */
+.webcam-container {
+    position: relative;
+    width: 640px;
+    height: 480px;
+    border: 8px solid black;
+    border-radius: 2rem;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* White overlay on webcam */
+#white-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 640px;
+    height: 480px;
+    background-color: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 2rem;
+}
+
+/* Pose overlay on webcam */
+#pose-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 550px;
+    height: 412px;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+/* PUNCH STYLES */
+
+.punch-page {
+    height: 100%;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #fff;
+}
+.punch-page .container {
+    outline: none !important;    /* remove the red dotted outline */
+    border: none !important;     /* in case border is used */
+    box-shadow: none !important; /* remove box shadows if applied */
+}
+.punch-page .container h1 {
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 2.5rem;
+    color: #222;
+}
+.punch-page .webcam-container {
+    display: inline-block;
+    /* no border or outline */
+}
+.punch-page #poseCanvas {
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}

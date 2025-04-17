@@ -68,6 +68,7 @@ function getAngleBetweenPoints(A, B, C) {
 const poseLibrary = [
     {
         name: "T-Pose",
+        image: "t-pose.png",
         audio: "T-Pose.m4a",
         validate: (lm) => {
             const leftAngle = getAngleBetweenPoints(lm[11], lm[13], lm[15]);
@@ -84,11 +85,12 @@ const poseLibrary = [
             );
         }
     },
-    { name: "Right Hand", audio: "Right Hand.m4a", validate: (lm) => lm[16].y < lm[12].y },
-    { name: "Left Hand", audio: "Left Hand.m4a", validate: (lm) => lm[15].y < lm[11].y },
-    { name: "Arms Up", audio: "Arms Up.m4a", validate: (lm) => lm[15].y < lm[11].y && lm[16].y < lm[12].y },
+    { name: "Right Hand", image: "rightHand.png", audio: "Right Hand.m4a", validate: (lm) => lm[16].y < lm[12].y },
+    { name: "Left Hand", image: "leftHand.png", audio: "Left Hand.m4a", validate: (lm) => lm[15].y < lm[11].y },
+    { name: "Arms Up", image: "armsUp.png", audio: "Arms Up.m4a", validate: (lm) => lm[15].y < lm[11].y && lm[16].y < lm[12].y },
     {
         name: "Hands on Hips",
+        image: "handsOnHips.png",
         audio: "Hands on Hips.m4a",
         validate: (lm) => {
             if (!lm[23] || !lm[24]) return false;
@@ -99,6 +101,7 @@ const poseLibrary = [
     },
     {
         name: "Touch Your Shoulders",
+        image: "touchShoulders.png",
         audio: "Touch Your Shoulders.m4a",
         validate: (lm) => {
             const l = Math.abs(lm[15].x - lm[11].x) < 0.1 && Math.abs(lm[15].y - lm[11].y) < 0.1;
@@ -108,6 +111,7 @@ const poseLibrary = [
     },
     {
         name: "One Arm Up, One Down",
+        image: "armUpDown.png",
         audio: "One Arm Up, One Down.m4a",
         validate: (lm) => (
             (lm[16].y < lm[12].y && lm[15].y > lm[11].y) ||
@@ -116,6 +120,7 @@ const poseLibrary = [
     },
     {
         name: "Hands on Head",
+        image: "handsOnHead.png",
         audio: "Hands on Head.m4a",
         validate: (lm) => {
             const headY = lm[0].y;
@@ -124,6 +129,7 @@ const poseLibrary = [
     },
     {
         name: "Salute",
+        image: "salute.png",
         audio: "Salute.m4a",
         validate: (lm) => {
             const eyeY = (lm[1].y + lm[4].y) / 2;
@@ -132,6 +138,7 @@ const poseLibrary = [
     },
     {
         name: "Hands Crossed in Front",
+        image: "crossArms.png",
         audio: "cross-hands.m4a",
         validate: (lm) => {
             const handsClose = Math.abs(lm[15].x - lm[16].x) < 0.15;
@@ -241,6 +248,7 @@ function getRandomPose() {
 // 🚀 Start a new round
 function startGameRound() {
     currentPose = getRandomPose();
+    document.getElementById("pose-image").src = `assets/poses/${currentPose.image}`;
     poseMatched = false;
     gameActive = true;
     allowPoseDetection = false; // block early detection
