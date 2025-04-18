@@ -76,6 +76,12 @@ body {
     cursor: pointer;
 }
 
+.game-button:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    animation: 0.5s ease-in-out infinite;
+}
+
 .menu-button {
     width: 180px;
     height: 500px;
@@ -410,6 +416,24 @@ canvas {
     z-index: 2;
 }
 
+#home-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px 20px;
+    height: 60px;
+}
+
+#replay-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px 20px;
+    height: 60px;
+}
+
 /* PUNCH STYLES */
 
 .game-page {
@@ -442,3 +466,4 @@ canvas {
     border-radius: 1rem;
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
+

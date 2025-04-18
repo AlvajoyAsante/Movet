@@ -314,7 +314,7 @@ window.startGameWithTarget = function (target) {
     requestAnimationFrame(() => gameEl.classList.add("visible"));
     instructionText.innerText = "🙆 Step into frame to begin!";
     endButtons.style.display = "flex";
-    replayBtn.style.display = "none";
+    replayBtn.style.display = "inline-flex";
     homeBtn.style.display = "inline-flex";
 
     // 🔄 Only now start the landmarker + detection
@@ -390,27 +390,7 @@ window.startGameWithTarget = function (target) {
 
 // Button Logic
 replayBtn.addEventListener("click", () => {
-    // Reset all necessary state
-    score = 0;
-    poseMatched = false;
-    gameOver = false;
-    gameActive = false;
-    userReady = false;
-    awaitingNeutral = false;
-    neutralTimerStarted = false;
-    readyFrameCount = 0;
-    instructionText.innerText = "🙆 Step into frame to begin!";
-    scoreText.innerText = "Score: 0";
-    whiteOverlay.style.opacity = 0;
-    overlayImg.style.opacity = 0;
-    endButtons.style.display = "none";
-
-    if (!musicStarted) {
-        backgroundMusic.play().catch(() => {});
-        musicStarted = true;
-    }
-
-    // Let the original pose detection loop continue running — it'll detect framing and start again
+    window.location.href = "simon.html";
 });
 
 homeBtn.addEventListener("click", () => {
