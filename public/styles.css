@@ -15,7 +15,9 @@ body {
     margin: 0;
     padding: 0;
     font-family: var(--font-primary);
-    background:  linear-gradient(to bottom right, #e0f0ff, #f5e9ff);
+    background: linear-gradient(to bottom right, #e0f0ff, #f5e9ff);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -76,12 +78,6 @@ body {
     cursor: pointer;
 }
 
-.game-button:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    animation: 0.5s ease-in-out infinite;
-}
-
 .menu-button {
     width: 180px;
     height: 500px;
@@ -104,6 +100,7 @@ body {
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     animation: 0.5s ease-in-out infinite;
+    filter: blur(0px);
 }
 
 .game-button:hover {
@@ -127,7 +124,21 @@ body {
     height: 100%;
     object-fit: cover;
     z-index: 0;
+    filter: blur(1px);
 }
+
+/* bottom: still thumbnail */
+.menu-button:hover .card-still {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    filter: blur(0px);
+}
+
 
 /* middle: text overlay */
 .menu-button .card-image {
@@ -168,6 +179,7 @@ body {
     object-fit: cover;
     display: none;
     z-index: 0;
+    filter: blur(1px);
 }
 
 .card-image {
@@ -246,17 +258,8 @@ canvas {
     height: 200px;
     background: var(--color-accent);
     border-radius: 50%;
-    top: 15%;
-    left: 70%;
-}
-
-.fun-bg .shape--circle-1 {
-    width: 200px;
-    height: 200px;
-    background: var(--color-accent);
-    border-radius: 50%;
-    top: 60%;
-    left: 75%;
+    top: 10%;
+    left: 80%;
 }
 
 /* Triangle */
@@ -266,18 +269,8 @@ canvas {
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
     border-bottom: 100px solid var(--color-accent);
-    top: 10%;
-    left: 20%;
-}
-
-.fun-bg .shape--triangle-1 {
-    width: 0;
-    height: 0;
-    border-left: 50px solid transparent;
-    border-right: 50px solid transparent;
-    border-bottom: 100px solid var(--color-accent);
-    top: 40%;
-    left: 15%;
+    top: 85%;
+    left: 70%;
 }
 
 /* Squiggly blob using clip‑path */
@@ -289,22 +282,8 @@ canvas {
         25% 0%, 75% 0%, 100% 25%, 100% 75%,
          75% 100%, 25% 100%,   0% 75%,   0% 25%
     );
-    top: 35%;
-    left: 50%;
-    transform: rotate(45deg);
-    animation-delay: 2s;
-}
-
-.fun-bg .shape--blob-1 {
-    width: 100px;
-    height: 100px;
-    background: var(--color-accent);
-    clip-path: polygon(
-        25% 0%, 75% 0%, 100% 25%, 100% 75%,
-         75% 100%, 25% 100%,   0% 75%,   0% 25%
-    );
-    top: 70%;
-    left: 30%;
+    top: 10%;
+    left: 15%;
     transform: rotate(45deg);
     animation-delay: 2s;
 }
@@ -444,7 +423,7 @@ canvas {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    /* background-color: #fff; */
+    background-color: #fff;
 }
 .game-page .container {
     outline: none !important;    /* remove the red dotted outline */
