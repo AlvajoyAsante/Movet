@@ -1,18 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Punch Out - Movét</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="punch-page">
-<div class="container">
-    <h1>Punch Out</h1>
-    <div class="webcam-container">
-        <canvas id="poseCanvas" width="640" height="480"></canvas>
+
+<body class="game-page">
+    <div class="fun-bg">
+        <span class="shape shape--circle"></span>
+        <span class="shape shape--triangle"></span>
+        <span class="shape shape--blob"></span>
     </div>
-</div>
-<script type="module" src="./js/punch.js"></script>
+
+    <div class="container">
+        <h1>Punch Out</h1>
+        <div class="webcam-container">
+            <canvas id="poseCanvas" width="640" height="480"></canvas>
+        </div>
+        <div id="end-buttons"
+            style="display: flex; flex-direction: row; justify-content: center; gap: 15px; margin-top: 20px;">
+            <button id="replay-btn" class="game-button">🔁 Replay</button>
+            <button id="home-btn" class="game-button">🏠 Return to Home</button>
+        </div>
+    </div>
+    <script type="module" src="./js/punch.js"></script>
 </body>
+
 </html>

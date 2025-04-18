@@ -8,13 +8,14 @@
     --transition: 0.3s ease;
     --color-accent: #5c6ac4;
     --color-accent2: #5c6ac4;
+    --color-accent3: #5c6ac4;
 }
 
 body {
     margin: 0;
     padding: 0;
     font-family: var(--font-primary);
-    background: var(--color-bg);
+    background:  linear-gradient(to bottom right, #e0f0ff, #f5e9ff);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -97,6 +98,12 @@ body {
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     animation: 0.5s ease-in-out infinite;
+}
+
+.game-button:hover {
+    transform: translateY(5px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    animation: jiggle 0.5s ease-in-out infinite;
 }
 
 @keyframes jiggle {
@@ -219,40 +226,81 @@ canvas {
     display: block;
 }
 
-/* Floating blobs */
-.fun-bg .blob {
+/* Floating shapes */
+.fun-bg .shape {
     position: absolute;
-    border-radius: 50%;
     opacity: 0.6;
     mix-blend-mode: multiply;
     animation: float 8s ease-in-out infinite;
 }
 
-.blob-1 {
+/* Circle */
+.fun-bg .shape--circle {
     width: 200px;
     height: 200px;
     background: var(--color-accent);
-    top: 10%;
-    left: 80%;
-    animation-delay: 0s;
+    border-radius: 50%;
+    top: 15%;
+    left: 70%;
 }
 
-.blob-2 {
-    width: 150px;
-    height: 150px;
-    background: var(--color-accent2);
-    top: 70%;
-    left: 10%;
+.fun-bg .shape--circle-1 {
+    width: 200px;
+    height: 200px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    top: 60%;
+    left: 75%;
+}
+
+/* Triangle */
+.fun-bg .shape--triangle {
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 100px solid var(--color-accent);
+    top: 10%;
+    left: 20%;
+}
+
+.fun-bg .shape--triangle-1 {
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 100px solid var(--color-accent);
+    top: 40%;
+    left: 15%;
+}
+
+/* Squiggly blob using clip‑path */
+.fun-bg .shape--blob {
+    width: 100px;
+    height: 100px;
+    background: var(--color-accent);
+    clip-path: polygon(
+        25% 0%, 75% 0%, 100% 25%, 100% 75%,
+         75% 100%, 25% 100%,   0% 75%,   0% 25%
+    );
+    top: 35%;
+    left: 50%;
+    transform: rotate(45deg);
     animation-delay: 2s;
 }
 
-.blob-3 {
-    width: 180px;
-    height: 180px;
-    background: #ffdd57;
-    top: 50%;
-    left: 50%;
-    animation-delay: 4s;
+.fun-bg .shape--blob-1 {
+    width: 100px;
+    height: 100px;
+    background: var(--color-accent);
+    clip-path: polygon(
+        25% 0%, 75% 0%, 100% 25%, 100% 75%,
+         75% 100%, 25% 100%,   0% 75%,   0% 25%
+    );
+    top: 70%;
+    left: 30%;
+    transform: rotate(45deg);
+    animation-delay: 2s;
 }
 
 @keyframes float {
@@ -293,32 +341,41 @@ canvas {
     display: flex;
     justify-content: center;   /* center horizontally */
     align-items: center;       /* center vertically */
-    gap: 8px;                  /* small horizontal gap between image and webcam */
+    /* gap: 8px;                  small horizontal gap between image and webcam */
 }
 
-/* Pose image container on the left */
+/* Make the parent relative so children can overlap */
+.game-content {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Pose image container on the left, overlapping the webcam */
 #pose-image-container {
+    position: relative;
+    z-index: 3;                /* bring above the webcam */
     height: 480px;
     display: flex;
     align-items: center;
-    margin: 0;                 /* remove margin-right from inline */
+    margin-right: -150px;      /* adjust overlap amount */
 }
 
 /* The pose image itself */
 #pose-image {
     height: 100%;
     width: auto;
-    max-width: 100%;
     object-fit: contain;
-    margin: 0 auto;            /* center inside container */
+    margin: 0 auto;
 }
 
 /* Webcam container on the right */
 .webcam-container {
     position: relative;
+    z-index: 2;                /* below the pose image */
     width: 640px;
     height: 480px;
-    border: 8px solid black;
     border-radius: 2rem;
     overflow: hidden;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
@@ -355,7 +412,7 @@ canvas {
 
 /* PUNCH STYLES */
 
-.punch-page {
+.game-page {
     height: 100%;
     margin: 0;
     font-family: 'Poppins', sans-serif;
@@ -363,24 +420,25 @@ canvas {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background-color: #fff;
+    /* background-color: #fff; */
 }
-.punch-page .container {
+.game-page .container {
     outline: none !important;    /* remove the red dotted outline */
     border: none !important;     /* in case border is used */
     box-shadow: none !important; /* remove box shadows if applied */
+    background-color: transparent !important; /* remove background color */
 }
-.punch-page .container h1 {
+.game-page .container h1 {
     margin-bottom: 20px;
     font-weight: 600;
     font-size: 2.5rem;
     color: #222;
 }
-.punch-page .webcam-container {
+.game-page .webcam-container {
     display: inline-block;
     /* no border or outline */
 }
-.punch-page #poseCanvas {
+.game-page #poseCanvas {
     border-radius: 1rem;
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }

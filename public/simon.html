@@ -1,46 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Simon Says - Movét</title>
-    <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simon Says - Movét</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-<div id="game-setup" style="text-align: center; margin-bottom: 20px;">
+  <div class="fun-bg">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+</div>
+  <div id="game-setup" style="text-align: center; margin-bottom: 20px;">
     <h2>Choose Your Target Score</h2>
     <button class="game-button" onclick="startGameWithTarget(5)">Play to 5</button>
     <button class="game-button" onclick="startGameWithTarget(10)">Play to 10</button>
     <button class="game-button" onclick="startGameWithTarget(15)">Play to 15</button>
-</div>
+  </div>
 
-<div id="game-container" class="video-wrapper" style="flex-direction: column; display: none;">
+  <div id="game-container" class="video-wrapper" style="flex-direction: column; display: none;">
     <h2 id="instruction-text" style="margin-bottom: 20px; text-align: center;">Get ready...</h2>
     <h3 id="score-text" style="text-align: center; margin-top: 10px;">Score: 0</h3>
 
     <!-- 📸 Pose image + 🎥 Webcam -->
     <div class="game-content">
-        <div id="pose-image-container">
-            <img id="pose-image" src="assets/poses/default.png" alt="Pose Instruction" />
-        </div>
+      <div id="pose-image-container">
+        <img id="pose-image" src="assets/poses/default.png" alt="Pose Instruction" />
+      </div>
 
-        <div class="webcam-container">
-            <canvas id="poseCanvas" width="640" height="480"></canvas>
+      <div class="webcam-container">
+        <canvas id="poseCanvas" width="640" height="480"></canvas>
 
-            <div id="white-overlay"></div>
+        <div id="white-overlay"></div>
 
-            <img id="pose-overlay" src="assets/outline.png" alt="Neutral Pose Overlay" />
-        </div>
+        <img id="pose-overlay" src="assets/outline.png" alt="Neutral Pose Overlay" />
+      </div>
     </div>
 
     <!-- Replay & Return buttons -->
-    <div id="end-buttons" style="display: none; flex-direction: row; justify-content: center; gap: 15px; margin-top: 20px;">
-        <button id="replay-btn" class="game-button">🔁 Replay</button>
-        <button id="home-btn" class="game-button">🏠 Return to Home</button>
+    <div id="end-buttons"
+      style="display: none; flex-direction: row; justify-content: center; gap: 15px; margin-top: 20px;">
+      <button id="replay-btn" class="game-button">🔁 Replay</button>
+      <button id="home-btn" class="game-button">🏠 Return to Home</button>
     </div>
-</div>
+  </div>
 
 
-<script type="module" src="./js/simon.js"></script>
+  <script type="module" src="./js/simon.js"></script>
 </body>
+
 </html>
