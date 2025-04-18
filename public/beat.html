@@ -18,8 +18,9 @@
 
     <div class="container">
         <h1>Hi-Beat</h1>
-        <div class="webcam-container">
-            <canvas id="poseCanvas" width="640" height="480"></canvas>
+        <div class="webcam-container" style="position: relative;">
+            <canvas id="poseCanvas" width="640" height="480" style="position:relative; z-index:1;"></canvas>
+            <canvas id="ballCanvas" width="640" height="480" style="position:absolute; top:0; left:0; pointer-events:none; z-index:2;"></canvas>
         </div>
         <div id="end-buttons"
             style="display: flex; flex-direction: row; justify-content: center; gap: 15px; margin-top: 20px;">
@@ -27,7 +28,20 @@
             <button id="home-btn" class="game-button">🏠 Return to Home</button>
         </div>
     </div>
-    <script type="module" src="./js/punch.js"></script>
+    <div id="music-controls" style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px;">
+        <button id="random-song-btn">🎵 Random Song</button>
+        <div id="spotify-player"></div>
+        <label for="bpm-input">BPM:</label>
+        <input type="number" id="bpm-input" value="120" min="30" max="300"/>
+        <label for="shine-select">Shine:</label>
+        <select id="shine-select">
+            <option value="matte">Matte</option>
+            <option value="glossy">Glossy</option>
+            <option value="metallic">Metallic</option>
+        </select>
+        <button id="start-btn" class="game-button">▶️ Start</button>
+    </div>
+    <script type="module" src="./js/beatBalls.js"></script>
 </body>
 
 </html>
