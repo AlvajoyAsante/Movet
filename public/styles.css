@@ -6,8 +6,8 @@
     --color-text: #2d3748;
     --radius: 1rem;
     --transition: 0.3s ease;
-    --color-accent: #ff6f61;
-    --color-accent2: #4acfac;
+    --color-accent: #5c6ac4;
+    --color-accent2: #5c6ac4;
 }
 
 body {
@@ -25,7 +25,7 @@ body {
 
 .container {
     background-color: rgba(255, 255, 255, 0.9);
-    border: 3px dashed var(--color-accent);
+    /* border: 3px var(--color-accent); */
     border-radius: var(--radius);
     padding: 60px;
     max-width: 700px;
@@ -75,10 +75,28 @@ body {
     cursor: pointer;
 }
 
-.game-button:hover {
+.menu-button {
+    width: 180px;
+    height: 500px;
+    background: var(--color-secondary);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius);
+    padding: 15px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: transform var(--transition), box-shadow var(--transition);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.menu-button:hover {
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    animation: jiggle 0.5s ease-in-out infinite;
+    animation: 0.5s ease-in-out infinite;
 }
 
 @keyframes jiggle {
@@ -88,7 +106,7 @@ body {
 }
 
 /* bottom: still thumbnail */
-.game-button .card-still {
+.menu-button .card-still {
     position: absolute;
     top: 0;
     left: 0;
@@ -99,7 +117,7 @@ body {
 }
 
 /* middle: text overlay */
-.game-button .card-image {
+.menu-button .card-image {
     position: absolute;
     top: 0;
     left: 0;
@@ -111,7 +129,7 @@ body {
 }
 
 /* top: hidden GIF */
-.game-button .card-gif {
+.menu-button .card-gif {
     position: absolute;
     top: 0;
     left: 0;
@@ -124,7 +142,7 @@ body {
     transition: opacity var(--transition);
 }
 
-.game-button:hover .card-gif {
+.menu-button:hover .card-gif {
     opacity: 1;
 }
 
