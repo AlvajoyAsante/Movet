@@ -4,6 +4,9 @@ async function init() {
     const canvas = document.getElementById('poseCanvas');
     const ctx = canvas.getContext('2d');
 
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+
     // Game state variables
     const boxWidth = 150, boxHeight = 150;
     const boxes = [

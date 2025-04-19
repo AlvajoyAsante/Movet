@@ -17,6 +17,13 @@ let bpm = 120;
 let shineType = 'matte';
 let spawnIntervalId;
 let speed = 200; // pixels per second
+let score = 0;
+
+let gameRunning = false;
+let maxScore = 0;
+let poseCtxTransformed = false;
+
+const homeBtn = document.getElementById('home-btn');
 
 // Predefined Spotify track URIs (replace or extend with your own)
 const tracks = [
@@ -40,22 +47,74 @@ randomBtn.addEventListener('click', () => {
 });
 
 startBtn.addEventListener('click', async () => {
-    bpm = parseInt(bpmInput.value, 10) || 120;
-    shineType = shineSelect.value;
-    startBtn.disabled = true;
-    randomBtn.disabled = true;
-    bpmInput.disabled = true;
-    shineSelect.disabled = true;
-    initThree();
-    // setup pose detection on the poseCanvas
-    const poseCanvas = document.getElementById('poseCanvas');
-    const poseCtx = poseCanvas.getContext('2d');
-    const detector = await setupPoseLandmarker(poseCanvas, poseCtx);
-    detector.startDetectionLoop(landmarks => { currentLandmarks = landmarks; });
-    const interval = (60 / bpm) * 1000;
-    spawnBall(); // immediate
-    spawnIntervalId = setInterval(spawnBall, interval);
+    if (!gameRunning) {
+        // ▶️ START the game
+        score = 0;
+        document.getElementById('score-display').innerText = `Score: ${score}`;
+        startBtn.innerText = '⏹️ Stop';
+        gameRunning = true;
+
+        bpm = parseInt(bpmInput.value, 10) || 120;
+        shineType = shineSelect.value;
+
+        startBtn.disabled = true;
+        randomBtn.disabled = true;
+        bpmInput.disabled = true;
+        shineSelect.disabled = true;
+
+        // Clear any existing balls
+        if (scene) {
+            balls.forEach(ball => scene.remove(ball));
+            balls = [];
+        }
+
+        initThree();
+
+        // Setup pose detection
+        const poseCanvas = document.getElementById('poseCanvas');
+        const poseCtx = poseCanvas.getContext('2d');
+        if (!poseCtxTransformed) {
+            poseCtx.translate(poseCanvas.width, 0);
+            poseCtx.scale(-1, 1);
+            poseCtxTransformed = true;
+        }
+
+        const detector = await setupPoseLandmarker(poseCanvas, poseCtx);
+        detector.startDetectionLoop(landmarks => { currentLandmarks = landmarks; });
+
+        const interval = (60 / bpm) * 1000;
+        spawnBall();
+        spawnIntervalId = setInterval(spawnBall, interval);
+
+        setTimeout(() => {
+            startBtn.disabled = false;
+        }, 500);
+    } else {
+        // ⏹️ STOP the game
+        gameRunning = false;
+        startBtn.innerText = '▶️ Start';
+
+        if (score > maxScore) {
+            maxScore = score;
+        }
+
+        // Clear interval and remove all balls
+        clearInterval(spawnIntervalId);
+        spawnIntervalId = null;
+
+        if (scene) {
+            balls.forEach(ball => scene.remove(ball));
+            balls = [];
+        }
+
+        // ✅ Re-enable input fields so user can adjust
+        startBtn.disabled = false;
+        randomBtn.disabled = false;
+        bpmInput.disabled = false;
+        shineSelect.disabled = false;
+    }
 });
+
 
 // Three.js scene setup
 let scene, camera, renderer;
@@ -133,6 +192,14 @@ function animate(time) {
         if (collided) {
             scene.remove(ball);
             balls.splice(i, 1);
+
+            // 🔼 Update score
+            score++;
+            const scoreDisplay = document.getElementById('score-display');
+            if (scoreDisplay) {
+                scoreDisplay.innerText = `Score: ${score}`;
+            }
+
             continue;
         }
         ball.position.y -= speed * delta;
@@ -143,3 +210,7 @@ function animate(time) {
     }
     renderer.render(scene, camera);
 }
+
+homeBtn.addEventListener('click', () => {
+    window.location.href = 'index.html';
+});
