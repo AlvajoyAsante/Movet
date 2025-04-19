@@ -42,10 +42,12 @@ UNC Charlotte | Computer Science, Artificial Intelligence, Gaming and Robotics '
 
 ### Ayemhenre Isikhuemhen  
 UNC Charlotte | Computer Science, Artificial Intelligence, Gaming and Robotics '26 
+
 📧 aisikhue@charlotte.edu | [GitHub](https://github.com/Taotlema)
 
 ### Bryan Witherspoon  
 UNC Charlotte | Computer Science, Software Engineering '26 
+
 📧 bwithe10@charlotte.edu | [GitHub](https://github.com/BryanAW)
 
 ## 📄 License
