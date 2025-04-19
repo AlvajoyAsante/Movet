@@ -38,6 +38,7 @@ Movét currently features three games designed to improve motor skills and physi
 ## 👥 Contributors
 ### Alvajoy Asante  
 UNC Charlotte | Computer Science, Artificial Intelligence, Gaming and Robotics '26  
+
 📧 aasante@charlotte.edu | [GitHub](https://github.com/AlvajoyAsante)
 
 ### Ayemhenre Isikhuemhen  
