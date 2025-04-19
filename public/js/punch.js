@@ -1,8 +1,12 @@
+// punch.js
 import { setupPoseLandmarker } from './poseDetector.js';
 
 async function init() {
     const canvas = document.getElementById('poseCanvas');
     const ctx = canvas.getContext('2d');
+    let score = 0;
+    const targetScore = 25;
+    let startTime = null;
 
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
@@ -10,10 +14,10 @@ async function init() {
     // Game state variables
     const boxWidth = 150, boxHeight = 150;
     const boxes = [
-        { x: canvas.width * 0.25 - boxWidth / 2, y: canvas.height * 0.25 - boxHeight / 2, hit: false },
-        { x: canvas.width * 0.75 - boxWidth / 2, y: canvas.height * 0.25 - boxHeight / 2, hit: false },
-        { x: canvas.width * 0.25 - boxWidth / 2, y: canvas.height * 0.75 - boxHeight / 2, hit: false },
-        { x: canvas.width * 0.75 - boxWidth / 2, y: canvas.height * 0.75 - boxHeight / 2, hit: false }
+        { x: canvas.width * 0.25 - boxWidth / 2, y: canvas.height * 0.25 - boxHeight / 2 },
+        { x: canvas.width * 0.75 - boxWidth / 2, y: canvas.height * 0.25 - boxHeight / 2 },
+        { x: canvas.width * 0.25 - boxWidth / 2, y: canvas.height * 0.75 - boxHeight / 2 },
+        { x: canvas.width * 0.75 - boxWidth / 2, y: canvas.height * 0.75 - boxHeight / 2 }
     ];
     let currentBoxIndex = 0;
     let gameOver = false;
@@ -26,12 +30,13 @@ async function init() {
         ctx.strokeRect(box.x, box.y, boxWidth, boxHeight);
     }
 
-    // Check for punch: wrist inside box
+    // Check for punch: hand inside box
     function checkPunch(landmarks) {
         const box = boxes[currentBoxIndex];
-        const wristIndices = [15, 16];
-        for (const idx of wristIndices) {
+        const handIndices = [19, 20];
+        for (const idx of handIndices) {
             const lm = landmarks[idx];
+            if (!lm) continue;
             const x = lm.x * canvas.width;
             const y = lm.y * canvas.height;
             if (x >= box.x && x <= box.x + boxWidth && y >= box.y && y <= box.y + boxHeight) {
@@ -46,10 +51,15 @@ async function init() {
         if (gameOver) return;
         drawBox();
         if (checkPunch(landmarks)) {
-            currentBoxIndex++;
-            if (currentBoxIndex >= boxes.length) {
+            score++;
+            document.getElementById('score-display').innerText = `Score: ${score}`;
+
+            currentBoxIndex = (currentBoxIndex + 1) % boxes.length;
+
+            if (score === targetScore) {
                 gameOver = true;
-                document.getElementById('end-buttons').style.display = 'flex';
+                const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+                document.getElementById('score-display').innerText = `🎉 Good job! You hit ${targetScore} in ${totalTime} seconds.`;
             }
         }
     }
@@ -59,15 +69,19 @@ async function init() {
 
     // Start detection loop with game logic
     detector.startDetectionLoop((landmarks) => {
+        if (!startTime) startTime = Date.now();
         gameTick(landmarks);
     });
 
     // Replay and Home button handlers
     document.getElementById('replay-btn').addEventListener('click', () => {
         currentBoxIndex = 0;
+        score = 0;
         gameOver = false;
-        document.getElementById('end-buttons').style.display = 'none';
+        startTime = null;
+        document.getElementById('score-display').innerText = `Score: ${score}`;
     });
+
     document.getElementById('home-btn').addEventListener('click', () => {
         window.location.href = 'index.html';
     });
